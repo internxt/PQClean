@@ -28,7 +28,7 @@ int PQCLEAN_KYBER768_CLEAN_crypto_kem_keypair_seeded(uint8_t *pk,
         const uint8_t *coins) {
     uint8_t buf[2 * KYBER_SYMBYTES];
     memcpy(buf, coins , KYBER_SYMBYTES);
-    PQCLEAN_KYBER512_CLEAN_crypto_kem_keypair_derand(pk, sk, coins);
+    PQCLEAN_KYBER768_CLEAN_crypto_kem_keypair_derand(pk, sk, coins);
     return 0;
 }
 /*************************************************
