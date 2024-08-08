@@ -7,6 +7,30 @@
 #include <stddef.h>
 #include <stdint.h>
 #include <string.h>
+
+/*************************************************
+* Name:        PQCLEAN_KYBER768_CLEAN_crypto_kem_keypair_seeded
+*
+* Description: Generates public and private key for the CPA-secure
+*              public-key encryption scheme underlying Kyber
+*
+* Arguments:   - uint8_t *pk: pointer to output public key
+*                (an already allocated array of KYBER_PUBLICKEYBYTES bytes)
+*              - uint8_t *sk: pointer to output private key
+*                (an already allocated array of KYBER_SECRETKEYBYTES bytes)
+*              - uint8_t *coins: pointer to input randomness
+*                (an already allocated array filled with 2*KYBER_SYMBYTES random bytes)
+**
+* Returns 0 (success)
+**************************************************/
+int PQCLEAN_KYBER768_CLEAN_crypto_kem_keypair_seeded(uint8_t *pk,
+        uint8_t *sk,
+        const uint8_t *coins) {
+    uint8_t buf[2 * KYBER_SYMBYTES];
+    memcpy(buf, coins , KYBER_SYMBYTES);
+    PQCLEAN_KYBER512_CLEAN_crypto_kem_keypair_derand(pk, sk, coins);
+    return 0;
+}
 /*************************************************
 * Name:        PQCLEAN_KYBER768_CLEAN_crypto_kem_keypair_derand
 *
@@ -93,6 +117,35 @@ int PQCLEAN_KYBER768_CLEAN_crypto_kem_enc_derand(uint8_t *ct,
 }
 
 /*************************************************
+* Name:         PQCLEAN_KYBER768_CLEAN_crypto_kem_enc_internal
+*
+* Description: Generates cipher text and shared
+*              secret for given public key
+*
+* Arguments:   - uint8_t *ct: pointer to output cipher text
+*                (an already allocated array of KYBER_CIPHERTEXTBYTES bytes)
+*              - uint8_t *ss: pointer to output shared secret
+*                (an already allocated array of KYBER_SSBYTES bytes)
+*              - const uint8_t *pk: pointer to input public key
+*                (an already allocated array of KYBER_PUBLICKEYBYTES bytes)
+**
+* Returns 0 (success)
+**************************************************/
+int PQCLEAN_KYBER768_CLEAN_crypto_kem_enc_internal(uint8_t *ct,
+        const uint8_t *ss,
+        const uint8_t *pk) {
+
+    uint8_t coins[KYBER_SYMBYTES];
+    randombytes(coins, KYBER_SYMBYTES);
+
+    /* coins are in kr+KYBER_SYMBYTES */
+    PQCLEAN_KYBER768_CLEAN_indcpa_enc(ct, ss, pk, coins);
+
+    return 0;
+
+}
+
+/*************************************************
 * Name:        PQCLEAN_KYBER768_CLEAN_crypto_kem_enc
 *
 * Description: Generates cipher text and shared
@@ -159,6 +212,31 @@ int PQCLEAN_KYBER768_CLEAN_crypto_kem_dec(uint8_t *ss,
 
     /* Copy true key to return buffer if fail is false */
     PQCLEAN_KYBER768_CLEAN_cmov(ss, kr, KYBER_SYMBYTES, (uint8_t) (1 - fail));
+
+    return 0;
+}
+
+/*************************************************
+* Name:         PQCLEAN_KYBER768_CLEAN_crypto_kem_dec_internal
+*
+* Description: Generates shared secret for given
+*              cipher text and private key without verification
+*
+* Arguments:   - uint8_t *ss: pointer to output shared secret
+*                (an already allocated array of KYBER_SSBYTES bytes)
+*              - const uint8_t *ct: pointer to input cipher text
+*                (an already allocated array of KYBER_CIPHERTEXTBYTES bytes)
+*              - const uint8_t *sk: pointer to input private key
+*                (an already allocated array of KYBER_SECRETKEYBYTES bytes)
+*
+* Returns 0.
+*
+**************************************************/
+int PQCLEAN_KYBER768_CLEAN_crypto_kem_dec_internal(uint8_t *ss,
+        const uint8_t *ct,
+        const uint8_t *sk) {
+
+    PQCLEAN_KYBER768_CLEAN_indcpa_dec(ss, ct, sk);
 
     return 0;
 }
