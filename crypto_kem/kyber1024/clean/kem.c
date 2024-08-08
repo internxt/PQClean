@@ -22,7 +22,7 @@
 **
 * Returns 0 (success)
 **************************************************/
-int PQCLEAN_KYBER1024_crypto_kem_keypair_seeded(uint8_t *pk,
+int PQCLEAN_KYBER1024_CLEAN__crypto_kem_keypair_seeded(uint8_t *pk,
         uint8_t *sk,
         const uint8_t *coins) {
     uint8_t buf[2 * KYBER_SYMBYTES];
