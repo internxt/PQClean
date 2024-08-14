@@ -1,3 +1,7 @@
+# Difference from the PQClean 
+
+PQClean is a C implementation of the post-quantum schemes from the NIST post-quantum project. Our update exposes the internal functions of the underlying K-PKE scheme. Namely: encryption of the given secret with the given randomness; decryption of the ciphertext without verification (without FO transform); and key generation from the given seed. 
+
 # PQClean
 
 _[See the build status for each component here](.github/workflows/BADGES.md)_
